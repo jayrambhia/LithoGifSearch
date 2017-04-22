@@ -1,31 +1,50 @@
 package com.fenchtose.lithogifsearch.components;
 
 import android.graphics.Color;
+import android.widget.ImageView;
 
-import com.facebook.litho.Column;
+import com.bumptech.glide.Glide;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.Output;
+import com.facebook.litho.Size;
+import com.facebook.litho.annotations.FromPrepare;
+import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnMeasure;
+import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaJustify;
+import com.facebook.litho.utils.MeasureUtils;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
-@LayoutSpec
+@MountSpec
 public class GifItemViewSpec {
 
-	@OnCreateLayout
-	static ComponentLayout onCreateLayout(ComponentContext c, @Prop GifItem gif) {
-		return Column.create(c)
-				.backgroundColor(Color.LTGRAY)
-				.alignContent(YogaAlign.CENTER)
-				.justifyContent(YogaJustify.CENTER)
-				.child(GlideImage.create(c)
-						.width(gif.getWidth())
-						.height(gif.getHeight())
-						.image(gif.getSmall())
-						.build())
-				.build();
+	public static final String TAG = GifItemViewSpec.class.getSimpleName();
+
+	@OnPrepare
+	static void onPrepare(ComponentContext context, @Prop GifItem gif, Output<Float> ratio) {
+		ratio.set((float) gif.getWidth() / gif.getHeight());
+	}
+
+	@OnMeasure
+	protected static void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size, @FromPrepare float ratio) {
+		MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, ratio, size);
+	}
+
+	@OnCreateMountContent
+	protected static ImageView onCreateMountContent(ComponentContext c) {
+		ImageView view = new ImageView(c.getApplicationContext());
+		view.setScaleType(ImageView.ScaleType.FIT_XY);
+		view.setAdjustViewBounds(true);
+		view.setBackgroundColor(Color.WHITE);
+		view.setScaleType(ImageView.ScaleType.CENTER);
+		return view;
+	}
+
+	@OnMount
+	static void onMount(ComponentContext c, ImageView view, @Prop GifItem gif) {
+		Glide.with(c.getBaseContext()).load(gif.getImage()).asGif().into(view);
 	}
 }

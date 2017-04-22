@@ -7,11 +7,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.RecyclerBinder;
-import com.fenchtose.lithogifsearch.components.GifListSpec;
 import com.fenchtose.lithogifsearch.components.HomeComponent;
 import com.fenchtose.lithogifsearch.components.HomeComponentSpec;
 import com.fenchtose.lithogifsearch.models.GifItem;
 import com.fenchtose.lithogifsearch.models.api.GifProvider;
+import com.fenchtose.lithogifsearch.utils.GifListUtils;
 
 import java.util.List;
 
@@ -23,12 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
 		final ComponentContext c = new ComponentContext(this);
 
-		final RecyclerBinder binder = GifListSpec.getBinder(c, this);
+		final RecyclerBinder binder = GifListUtils.getBinder(c, this);
 
 		final GifProvider gifProvider = new GifProvider(new GifProvider.ResposneListener() {
 			@Override
 			public void onSuccess(List<GifItem> gifs) {
-				GifListSpec.updateContent(c, binder, gifs);
+				GifListUtils.updateContent(c, binder, gifs);
 			}
 
 			@Override

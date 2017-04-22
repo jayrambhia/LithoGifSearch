@@ -5,14 +5,14 @@ import com.google.gson.JsonObject;
 public class GifItem {
 
 	private final String id;
-	private final String small;
+	private final String image;
 	private final int width;
 	private final int height;
 
 	public GifItem(JsonObject json) {
 		this.id = json.get("id").getAsString();
 		JsonObject image = json.get("images").getAsJsonObject().get("original").getAsJsonObject();
-		this.small = image.get("url").getAsString();
+		this.image = image.get("url").getAsString();
 		this.width = image.get("width").getAsInt();
 		this.height = image.get("height").getAsInt();
 	}
@@ -21,8 +21,8 @@ public class GifItem {
 		return id;
 	}
 
-	public String getSmall() {
-		return small;
+	public String getImage() {
+		return image;
 	}
 
 	public int getWidth() {

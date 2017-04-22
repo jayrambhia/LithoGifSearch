@@ -1,43 +1,29 @@
-package com.fenchtose.lithogifsearch.components;
+package com.fenchtose.lithogifsearch.utils;
 
 import android.content.Context;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Row;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.GridLayoutInfo;
-import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.fenchtose.lithogifsearch.components.GifItemView;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@LayoutSpec
-public class GifListSpec {
-
-	@OnCreateLayout
-	static ComponentLayout onCreateLayout(ComponentContext c, @Prop RecyclerBinder binder) {
-		return Row.create(c)
-				.child(Recycler.create(c)
-						.binder(binder).build()).build();
-	}
-
+public class GifListUtils {
 	public static void updateContent(ComponentContext c, RecyclerBinder binder, List<GifItem> gifs) {
 
 		binder.removeRangeAt(0, binder.getItemCount());
 
 		List<ComponentInfo> components = new ArrayList<>();
 
-		for (GifItem gifItem : gifs) {
+		for (GifItem gif: gifs) {
 			components.add(ComponentInfo.create().component(
 					GifItemView.create(c)
-							.gif(gifItem)
-							.key(gifItem.getId())
+							.gif(gif)
+							.key(gif.getId())
 							.build()
 				).build()
 			);

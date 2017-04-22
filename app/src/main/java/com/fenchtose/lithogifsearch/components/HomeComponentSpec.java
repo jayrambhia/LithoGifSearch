@@ -26,7 +26,7 @@ public class HomeComponentSpec {
 							.textSizeDip(16)
 							.hint(hint)
 							.textChangedEventHandler(HomeComponent.onQueryChanged(c)))
-				.child(GifList.create(c).binder(binder))
+				.child(MyRecyclerView.create(c).binder(binder))
 				.build();
 	}
 
