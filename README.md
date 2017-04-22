@@ -57,4 +57,5 @@ I finally got it right. It now display GIFs.
 Wow, I have said too much. It's fun to work with Litho. The API is quite easy but there is some learning curve and
 if you want customize it or have some weird states, you're in for a roll.
 
-
+## Disclaimer
+I do not (yet) fully understand Litho, States, Yoga, Flexbox so feel free to suggest updates and best practices.
