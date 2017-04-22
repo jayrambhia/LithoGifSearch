@@ -4,6 +4,8 @@ Facebook recently released [Litho](http://fblitho.com/) - A declarative UI frame
 heard, Litho is inspired by React. React has concept of components so that it can be easily reused and
 rendered (with jsx). To follow that I have made some components.
 
+Here's an elaborated dumb blogpost - **[Android GIF search engine with Litho](http://www.jayrambhia.com/blog/android-litho-gifs)**
+
 ![Screenshot](https://raw.githubusercontent.com/jayrambhia/LithoGifSearch/master/art/demo1.jpg)
 
 ## Components

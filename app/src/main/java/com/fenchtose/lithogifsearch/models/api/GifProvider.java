@@ -1,7 +1,6 @@
 package com.fenchtose.lithogifsearch.models.api;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.fenchtose.lithogifsearch.models.GifItem;
 import com.google.gson.JsonArray;
@@ -36,7 +35,6 @@ public class GifProvider {
 		call.enqueue(new Callback<JsonObject>() {
 			@Override
 			public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-				Log.i("GifProvider", "response: " + response.body());
 				JsonArray data = response.body().get("data").getAsJsonArray();
 				List<GifItem> gifs = new ArrayList<>();
 				for (int i=0; i<data.size(); i++) {

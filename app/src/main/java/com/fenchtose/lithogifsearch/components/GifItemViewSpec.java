@@ -3,7 +3,6 @@ package com.fenchtose.lithogifsearch.components;
 import android.graphics.Color;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -30,14 +29,13 @@ public class GifItemViewSpec {
 	}
 
 	@OnMeasure
-	protected static void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size, @FromPrepare float ratio) {
+	static void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size, @FromPrepare float ratio) {
 		MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, ratio, size);
 	}
 
 	@OnCreateMountContent
-	protected static ImageView onCreateMountContent(ComponentContext c) {
+	static ImageView onCreateMountContent(ComponentContext c) {
 		ImageView view = new ImageView(c.getApplicationContext());
-		view.setScaleType(ImageView.ScaleType.FIT_XY);
 		view.setAdjustViewBounds(true);
 		view.setBackgroundColor(Color.WHITE);
 		view.setScaleType(ImageView.ScaleType.CENTER);
