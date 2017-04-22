@@ -4,6 +4,8 @@ Facebook recently released [Litho](http://fblitho.com/) - A declarative UI frame
 heard, Litho is inspired by React. React has concept of components so that it can be easily reused and
 rendered (with jsx). To follow that I have made some components.
 
+![Screenshot](https://raw.githubusercontent.com/jayrambhia/LithoGifSearch/master/art/demo1.jpg)
+
 ## Components
 
 ### HomeComponent
@@ -16,7 +18,7 @@ styling. This column contains two components.
 
 Since it was not really necessary to create a separate component for EditText at the moment, I have directly added
 it in the column as a child. EditText is a litho widget which renders android's EditText. We need to listen to EditText
-updates so I created an interface `onQueryUpdateListener` and passed it as a prop to HomeComponent. It has an '@OnEvent(TextChangedEvent.class)'
+updates so I created an interface `onQueryUpdateListener` and passed it as a prop to HomeComponent. It has an `@OnEvent(TextChangedEvent.class)`
 method which when hooked to `EditText.textChangedEventHandler()`, it will start giving you updates.
 
 Even for the RecyclerView, we do not require a separate component but I have created it since I was doing some testing
