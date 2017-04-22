@@ -2,6 +2,7 @@ package com.fenchtose.lithogifsearch.utils;
 
 import android.content.Context;
 
+import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.widget.GridLayoutInfo;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GifListUtils {
-	public static void updateContent(ComponentContext c, RecyclerBinder binder, List<GifItem> gifs) {
+	public static void updateContent(ComponentContext c, RecyclerBinder binder, RequestManager glide, List<GifItem> gifs) {
 
 		binder.removeRangeAt(0, binder.getItemCount());
 
@@ -23,6 +24,7 @@ public class GifListUtils {
 			components.add(ComponentInfo.create().component(
 					GifItemView.create(c)
 							.gif(gif)
+							.glide(glide)
 							.key(gif.getId())
 							.build()
 				).build()

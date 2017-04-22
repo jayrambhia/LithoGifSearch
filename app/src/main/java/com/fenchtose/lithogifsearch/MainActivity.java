@@ -3,6 +3,8 @@ package com.fenchtose.lithogifsearch;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -25,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
 		final RecyclerBinder binder = GifListUtils.getBinder(c, this);
 
+		final RequestManager glide = Glide.with(this);
+
 		final GifProvider gifProvider = new GifProvider(new GifProvider.ResposneListener() {
 			@Override
 			public void onSuccess(List<GifItem> gifs) {
-				GifListUtils.updateContent(c, binder, gifs);
+				GifListUtils.updateContent(c, binder, glide, gifs);
 			}
 
 			@Override

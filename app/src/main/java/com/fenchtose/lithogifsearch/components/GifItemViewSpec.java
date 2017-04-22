@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Output;
@@ -44,7 +45,7 @@ public class GifItemViewSpec {
 	}
 
 	@OnMount
-	static void onMount(ComponentContext c, ImageView view, @Prop GifItem gif) {
-		Glide.with(c.getBaseContext()).load(gif.getImage()).asGif().into(view);
+	static void onMount(ComponentContext c, ImageView view, @Prop RequestManager glide, @Prop GifItem gif) {
+		glide.load(gif.getImage()).asGif().into(view);
 	}
 }
