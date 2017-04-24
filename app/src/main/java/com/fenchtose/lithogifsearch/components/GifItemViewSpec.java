@@ -28,6 +28,7 @@ public class GifItemViewSpec {
 							.build())
 				.child(FavButton.create(context)
 						.callback(favCallback)
+						.propLiked(gif.isLiked())
 						.initLiked(gif.isLiked())
 						.gifId(gif.getId())
 						.withLayout()

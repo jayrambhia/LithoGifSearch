@@ -33,6 +33,7 @@ public class FullScreenComponentSpec {
 						.alignSelf(YogaAlign.CENTER)
 						.build())
 				.child(FavButton.create(context)
+						.propLiked(isLiked)
 						.initLiked(isLiked)
 						.isBig(true)
 						.gifId(gif.getId())

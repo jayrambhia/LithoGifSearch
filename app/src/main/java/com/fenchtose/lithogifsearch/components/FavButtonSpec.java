@@ -24,10 +24,10 @@ public class FavButtonSpec {
 	}
 
 	@OnCreateLayout
-	static ComponentLayout onCreateLayout(ComponentContext context,@Prop String gifId, @Prop(optional = true) boolean isBig, @State boolean isLiked) {
+	static ComponentLayout onCreateLayout(ComponentContext context, @Prop String gifId, @Prop boolean propLiked, @Prop(optional = true) boolean isBig, @State boolean isLiked) {
 		return Image.create(context)
 				.key(gifId)
-				.drawableRes(isLiked ? (isBig ? R.drawable.ic_favorite_accent_48dp : R.drawable.ic_favorite_accent_24dp)
+				.drawableRes(propLiked ? (isBig ? R.drawable.ic_favorite_accent_48dp : R.drawable.ic_favorite_accent_24dp)
 						: (isBig ? R.drawable.ic_favorite_border_accent_48dp : R.drawable.ic_favorite_border_accent_24dp))
 				.withLayout()
 				.clickHandler(FavButton.onLikeButtonClicked(context))

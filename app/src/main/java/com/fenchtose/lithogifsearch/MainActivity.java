@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onGifLiked(String id, boolean liked) {
 				likeStore.setLiked(id, liked);
+				updateGifLikeStatus(id);
 			}
 		};
 
@@ -121,21 +122,7 @@ public class MainActivity extends AppCompatActivity {
 			isFullScreen = false;
 
 			if (selectedGifId != null) {
-				int selectedIndex = -1;
-				for (int i=0; i<gifs.size(); i++) {
-					GifItem gif = gifs.get(i);
-					if (selectedGifId.equals(gif.getId())) {
-						selectedIndex = i;
-						break;
-					}
-				}
-
-				if (selectedIndex != -1) {
-					GifItem current = gifs.get(selectedIndex);
-					GifItem gif = new GifItem(current, likeStore.isLiked(current.getId()));
-					gifs.set(selectedIndex, gif);
-					GifListUtils.updateItem(cContext, binder, glide, gif, selectedIndex, gifCallback, favCallback);
-				}
+				updateGifLikeStatus(selectedGifId);
 			}
 
 			root.setComponentAsync(homeComponent);
@@ -144,5 +131,23 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		super.onBackPressed();
+	}
+
+	private void updateGifLikeStatus(String gifId) {
+		int selectedIndex = -1;
+		for (int i=0; i<gifs.size(); i++) {
+			GifItem gif = gifs.get(i);
+			if (gifId.equals(gif.getId())) {
+				selectedIndex = i;
+				break;
+			}
+		}
+
+		if (selectedIndex != -1) {
+			GifItem current = gifs.get(selectedIndex);
+			GifItem gif = new GifItem(current, likeStore.isLiked(current.getId()));
+			gifs.set(selectedIndex, gif);
+			GifListUtils.updateItem(cContext, binder, glide, gif, selectedIndex, gifCallback, favCallback);
+		}
 	}
 }
