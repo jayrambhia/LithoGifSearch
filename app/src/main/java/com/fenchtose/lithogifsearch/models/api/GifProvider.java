@@ -3,6 +3,7 @@ package com.fenchtose.lithogifsearch.models.api;
 import android.support.annotation.NonNull;
 
 import com.fenchtose.lithogifsearch.models.GifItem;
+import com.fenchtose.lithogifsearch.models.db.LikeStore;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -18,9 +19,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GifProvider {
 
 	private GifApi api;
-	private final ResposneListener listener;
+	private final ResponseListener listener;
+	private final LikeStore likeStore;
 
-	public GifProvider(ResposneListener listener) {
+	public GifProvider(ResponseListener listener, LikeStore store) {
 		this.listener = listener;
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(GifApi.ENDPOINT)
@@ -28,6 +30,7 @@ public class GifProvider {
 				.build();
 
 		api = retrofit.create(GifApi.class);
+		this.likeStore = store;
 	}
 
 	public void search(@NonNull String query) {
@@ -39,7 +42,7 @@ public class GifProvider {
 				List<GifItem> gifs = new ArrayList<>();
 				for (int i=0; i<data.size(); i++) {
 					JsonObject json = data.get(i).getAsJsonObject();
-					gifs.add(new GifItem(json));
+					gifs.add(new GifItem(json, likeStore.isLiked(json.get("id").getAsString())));
 				}
 
 				listener.onSuccess(gifs);
@@ -52,7 +55,7 @@ public class GifProvider {
 		});
 	}
 
-	public interface ResposneListener {
+	public interface ResponseListener {
 		void onSuccess(List<GifItem> gifs);
 		void onFailure(Throwable t);
 	}
