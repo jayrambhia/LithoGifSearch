@@ -7,9 +7,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.fenchtose.lithogifsearch.components.FullScreenComponent;
+import com.fenchtose.lithogifsearch.components.FullScreenComponentSpec;
 import com.fenchtose.lithogifsearch.components.GifItemViewSpec;
 import com.fenchtose.lithogifsearch.components.HomeComponent;
 import com.fenchtose.lithogifsearch.components.HomeComponentSpec;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 	private Component homeComponent;
 	private LithoView root;
 	private boolean isFullScreen;
+	private ComponentTree componentTree;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onGifSelected(GifItem gif) {
-				showFullScreen(c, glide, gif);
+				showFullScreen(c, glide, gif, likeStore);
 			}
 		};
 
@@ -81,16 +84,31 @@ public class MainActivity extends AppCompatActivity {
 				.build();
 
 		root = LithoView.create(this, homeComponent);
+
+		componentTree = ComponentTree.create(c, homeComponent)
+				.build();
+
+		root.setComponentTree(componentTree);
+
 		setContentView(root);
 	}
 
-	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif) {
+	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore) {
 		Component component = FullScreenComponent.create(context)
+				.initLiked(likeStore.isLiked(gif.getId()))
 				.gif(gif)
+				// Key is important. If key is not provided (or not different), state initializtion will not work
+				.key(gif.getId())
 				.glide(glide)
+				.callback(new FullScreenComponentSpec.Callback() {
+					@Override
+					public void onGifLiked(String id, boolean liked) {
+						likeStore.setLiked(id, liked);
+					}
+				})
 				.build();
 
-		root.setComponent(component);
+		componentTree.setRoot(component, true);
 		isFullScreen = true;
 	}
 
@@ -98,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		if (isFullScreen) {
 			isFullScreen = false;
-			root.setComponent(homeComponent);
+			componentTree.setRoot(homeComponent, true);
 			return;
 		}
 
