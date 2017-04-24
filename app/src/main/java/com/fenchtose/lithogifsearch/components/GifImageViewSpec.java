@@ -27,9 +27,9 @@ public class GifImageViewSpec {
 	}
 
 	@OnMeasure
-	static void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size, @FromPrepare float ratio) {
-		// Not using ratio as of now
-		MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, 1, size);
+	static void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size,
+						  @Prop (optional = true) boolean isFullScreen, @FromPrepare float ratio) {
+		MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, isFullScreen ? ratio : 1, size);
 	}
 
 	@OnCreateMountContent
@@ -42,7 +42,8 @@ public class GifImageViewSpec {
 	}
 
 	@OnMount
-	static void onMount(ComponentContext c, ImageView view, @Prop RequestManager glide, @Prop GifItem gif) {
-		glide.load(gif.getImage()).asGif().into(view);
+	static void onMount(ComponentContext c, ImageView view, @Prop RequestManager glide, @Prop GifItem gif,
+						@Prop (optional = true) boolean isFullScreen) {
+		glide.load(isFullScreen ? gif.getImage() : gif.getSmall()).asGif().into(view);
 	}
 }

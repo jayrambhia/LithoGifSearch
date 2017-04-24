@@ -47,8 +47,9 @@ public class GifItemViewSpec {
 						.heightDip(40)
 						.paddingDip(YogaEdge.ALL, 8)
 						.alignSelf(YogaAlign.FLEX_END)
-						.build()
-				).build();
+						.build())
+				.clickHandler(GifItemView.onViewClicked(context))
+				.build();
 	}
 
 	@OnUpdateState
@@ -65,7 +66,15 @@ public class GifItemViewSpec {
 		GifItemView.updateLikeButtonAsync(c);
 	}
 
+	@OnEvent(ClickEvent.class)
+	static void onViewClicked(ComponentContext c, @Prop GifItem gif, @Prop (optional = true) GifCallback callback) {
+		if (callback != null) {
+			callback.onGifSelected(gif);
+		}
+	}
+
 	public interface GifCallback {
 		void onGifLiked(String id, boolean liked);
+		void onGifSelected(GifItem gif);
 	}
 }

@@ -6,12 +6,14 @@ public class GifItem {
 
 	private final String id;
 	private final String image;
+	private final String small;
 	private final int width;
 	private final int height;
 	private final boolean isLiked;
 
 	public GifItem(JsonObject json, boolean isLiked) {
 		this.id = json.get("id").getAsString();
+		this.small = json.get("images").getAsJsonObject().get("fixed_height_downsampled").getAsJsonObject().get("url").getAsString();
 		JsonObject image = json.get("images").getAsJsonObject().get("original").getAsJsonObject();
 		this.image = image.get("url").getAsString();
 		this.width = image.get("width").getAsInt();
@@ -25,6 +27,10 @@ public class GifItem {
 
 	public String getImage() {
 		return image;
+	}
+
+	public String getSmall() {
+		return small;
 	}
 
 	public int getWidth() {
