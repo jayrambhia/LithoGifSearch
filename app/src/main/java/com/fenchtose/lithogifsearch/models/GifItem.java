@@ -21,6 +21,15 @@ public class GifItem {
 		this.isLiked = isLiked;
 	}
 
+	public GifItem(GifItem gif, boolean isLiked) {
+		this.id = gif.getId();
+		this.image = gif.getImage();
+		this.small = gif.getSmall();
+		this.width = gif.getWidth();
+		this.height = gif.getHeight();
+		this.isLiked = isLiked;
+	}
+
 	public String getId() {
 		return id;
 	}

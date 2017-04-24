@@ -7,11 +7,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.fenchtose.lithogifsearch.components.FavButtonSpec;
 import com.fenchtose.lithogifsearch.components.FullScreenComponent;
-import com.fenchtose.lithogifsearch.components.FullScreenComponentSpec;
 import com.fenchtose.lithogifsearch.components.GifItemViewSpec;
 import com.fenchtose.lithogifsearch.components.HomeComponent;
 import com.fenchtose.lithogifsearch.components.HomeComponentSpec;
@@ -28,36 +27,47 @@ public class MainActivity extends AppCompatActivity {
 	private Component homeComponent;
 	private LithoView root;
 	private boolean isFullScreen;
-	private ComponentTree componentTree;
+	private String selectedGifId = null;
+	private RecyclerBinder binder;
+	private List<GifItem> gifs;
+	private LikeStore likeStore;
+	private ComponentContext cContext;
+	private RequestManager glide;
+
+	private GifItemViewSpec.GifCallback gifCallback;
+	private FavButtonSpec.Callback favCallback;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final ComponentContext c = new ComponentContext(this);
+		cContext = new ComponentContext(this);
 
-		final RecyclerBinder binder = GifListUtils.getBinder(c, this);
+		binder = GifListUtils.getBinder(cContext, this);
 
-		final RequestManager glide = Glide.with(this);
+		glide = Glide.with(this);
 
-		final LikeStore likeStore = new PreferenceLikeStore(this);
+		likeStore = new PreferenceLikeStore(this);
 
-		final GifItemViewSpec.GifCallback callback = new GifItemViewSpec.GifCallback() {
+		gifCallback = new GifItemViewSpec.GifCallback() {
+			@Override
+			public void onGifSelected(GifItem gif) {
+				showFullScreen(cContext, glide, gif, likeStore);
+			}
+		};
+
+		favCallback = new FavButtonSpec.Callback() {
 			@Override
 			public void onGifLiked(String id, boolean liked) {
 				likeStore.setLiked(id, liked);
-			}
-
-			@Override
-			public void onGifSelected(GifItem gif) {
-				showFullScreen(c, glide, gif, likeStore);
 			}
 		};
 
 		final GifProvider.ResponseListener responseListener = new GifProvider.ResponseListener() {
 			@Override
-			public void onSuccess(List<GifItem> gifs) {
-				GifListUtils.updateContent(c, binder, glide, gifs, callback);
+			public void onSuccess(List<GifItem> data) {
+				gifs = data;
+				GifListUtils.updateContent(cContext, binder, glide, gifs, gifCallback, favCallback);
 			}
 
 			@Override
@@ -77,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 
-		homeComponent = HomeComponent.create(c)
+		homeComponent = HomeComponent.create(cContext)
 				.hint("Search Gif")
 				.binder(binder)
 				.listener(queryListener)
@@ -85,30 +95,23 @@ public class MainActivity extends AppCompatActivity {
 
 		root = LithoView.create(this, homeComponent);
 
-		componentTree = ComponentTree.create(c, homeComponent)
-				.build();
-
-		root.setComponentTree(componentTree);
-
 		setContentView(root);
 	}
 
 	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore) {
+
+		selectedGifId = gif.getId();
+
 		Component component = FullScreenComponent.create(context)
-				.initLiked(likeStore.isLiked(gif.getId()))
 				.gif(gif)
-				// Key is important. If key is not provided (or not different), state initializtion will not work
+				.isLiked(likeStore.isLiked(gif.getId()))
+				// Key is important. If key is not provided (or not different), state initialization will not work
 				.key(gif.getId())
 				.glide(glide)
-				.callback(new FullScreenComponentSpec.Callback() {
-					@Override
-					public void onGifLiked(String id, boolean liked) {
-						likeStore.setLiked(id, liked);
-					}
-				})
+				.callback(favCallback)
 				.build();
 
-		componentTree.setRoot(component, true);
+		root.setComponentAsync(component);
 		isFullScreen = true;
 	}
 
@@ -116,7 +119,27 @@ public class MainActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		if (isFullScreen) {
 			isFullScreen = false;
-			componentTree.setRoot(homeComponent, true);
+
+			if (selectedGifId != null) {
+				int selectedIndex = -1;
+				for (int i=0; i<gifs.size(); i++) {
+					GifItem gif = gifs.get(i);
+					if (selectedGifId.equals(gif.getId())) {
+						selectedIndex = i;
+						break;
+					}
+				}
+
+				if (selectedIndex != -1) {
+					GifItem current = gifs.get(selectedIndex);
+					GifItem gif = new GifItem(current, likeStore.isLiked(current.getId()));
+					gifs.set(selectedIndex, gif);
+					GifListUtils.updateItem(cContext, binder, glide, gif, selectedIndex, gifCallback, favCallback);
+				}
+			}
+
+			root.setComponentAsync(homeComponent);
+			selectedGifId = null;
 			return;
 		}
 
