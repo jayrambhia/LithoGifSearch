@@ -1,26 +1,32 @@
 package com.fenchtose.lithogifsearch.components;
 
+
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Image;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
+import com.fenchtose.lithogifsearch.events.FavChangeEvent;
+import com.fenchtose.lithogifsearch.events.LikeChangeEvent;
 import com.fenchtose.lithogifsearch.R;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
-@LayoutSpec
+@LayoutSpec(events = { LikeChangeEvent.class })
 public class GifItemViewSpec {
 
 	@OnCreateInitialState
@@ -31,6 +37,7 @@ public class GifItemViewSpec {
 	@OnCreateLayout
 	static ComponentLayout onCreateLayout(ComponentContext context, @Prop GifItem gif,
 										  @Prop RequestManager glide, @State boolean isLiked) {
+
 		return Column.create(context)
 				.child(GifImageView.create(context)
 							.gif(gif)
@@ -53,8 +60,8 @@ public class GifItemViewSpec {
 	}
 
 	@OnUpdateState
-	static void updateLikeButton(StateValue<Boolean> isLiked) {
-		isLiked.set(!isLiked.get());
+	static void updateLikeButton(StateValue<Boolean> isLiked, @Param boolean updatedValue) {
+		isLiked.set(updatedValue);
 	}
 
 	@OnEvent(ClickEvent.class)
@@ -63,18 +70,27 @@ public class GifItemViewSpec {
 			callback.onGifLiked(gif.getId(), !isLiked);
 		}
 
-		GifItemView.updateLikeButtonAsync(c);
+		GifItemView.dispatchLikeChangeEvent(GifItemView.getLikeChangeEventHandler(c), !isLiked, gif.getId());
+
+		GifItemView.updateLikeButtonAsync(c, !isLiked);
 	}
 
 	@OnEvent(ClickEvent.class)
 	static void onViewClicked(ComponentContext c, @Prop GifItem gif, @Prop (optional = true) GifCallback callback) {
 		if (callback != null) {
-			callback.onGifSelected(gif);
+			callback.onGifSelected(gif, c.getComponentScope());
+		}
+	}
+
+	@OnEvent(FavChangeEvent.class)
+	static void onFavChanged(ComponentContext c, @FromEvent boolean isLiked, @FromEvent String gifId, @Prop GifItem gif) {
+		if (gif.getId().equals(gifId)) {
+			GifItemView.updateLikeButtonAsync(c, isLiked);
 		}
 	}
 
 	public interface GifCallback {
 		void onGifLiked(String id, boolean liked);
-		void onGifSelected(GifItem gif);
+		void onGifSelected(GifItem gif, Component gifComponent);
 	}
 }

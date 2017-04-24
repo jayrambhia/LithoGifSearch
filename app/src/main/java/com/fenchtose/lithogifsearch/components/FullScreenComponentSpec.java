@@ -5,8 +5,10 @@ import android.graphics.Color;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -20,10 +22,13 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import com.fenchtose.lithogifsearch.R;
+import com.fenchtose.lithogifsearch.events.FavChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
 @LayoutSpec
 public class FullScreenComponentSpec {
+
+	private static final String TAG = "FullScreenComponent";
 
 	@OnCreateInitialState
 	static void createInitialState(ComponentContext c, StateValue<Boolean> isLiked, @Prop boolean initLiked) {
@@ -62,12 +67,15 @@ public class FullScreenComponentSpec {
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) Callback callback) {
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) Callback callback,
+									@Prop Component gifComponent) {
 		if (callback != null) {
 			callback.onGifLiked(gif.getId(), !isLiked);
 		}
 
 		FullScreenComponent.updateLikeButtonAsync(c);
+		EventHandler<FavChangeEvent> handler = GifItemView.onFavChanged(gifComponent.getScopedContext());
+		handler.dispatchEvent(new FavChangeEvent(!isLiked, gif.getId()));
 	}
 
 	public interface Callback {

@@ -2,12 +2,16 @@ package com.fenchtose.lithogifsearch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.EventDispatcher;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.fenchtose.lithogifsearch.components.FullScreenComponent;
@@ -15,6 +19,7 @@ import com.fenchtose.lithogifsearch.components.FullScreenComponentSpec;
 import com.fenchtose.lithogifsearch.components.GifItemViewSpec;
 import com.fenchtose.lithogifsearch.components.HomeComponent;
 import com.fenchtose.lithogifsearch.components.HomeComponentSpec;
+import com.fenchtose.lithogifsearch.events.LikeChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
 import com.fenchtose.lithogifsearch.models.api.GifProvider;
 import com.fenchtose.lithogifsearch.models.db.LikeStore;
@@ -30,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 	private boolean isFullScreen;
 	private ComponentTree componentTree;
 
+	private static final String TAG = "MainActivity";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,6 +49,21 @@ public class MainActivity extends AppCompatActivity {
 
 		final LikeStore likeStore = new PreferenceLikeStore(this);
 
+		final EventHandler likeChangeHandler = new EventHandler(new HasEventDispatcher() {
+			@Override
+			public EventDispatcher getEventDispatcher() {
+				return new EventDispatcher() {
+					@Override
+					public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+						Log.d(TAG, "Gif Liked: " + ((LikeChangeEvent)eventState).gifId + ", liked: " +
+								((LikeChangeEvent)eventState).isLiked);
+
+						return null;
+					}
+				};
+			}
+		}, 0, null);
+
 		final GifItemViewSpec.GifCallback callback = new GifItemViewSpec.GifCallback() {
 			@Override
 			public void onGifLiked(String id, boolean liked) {
@@ -49,15 +71,16 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public void onGifSelected(GifItem gif) {
-				showFullScreen(c, glide, gif, likeStore);
+			public void onGifSelected(GifItem gif, Component gifComponent) {
+				showFullScreen(c, glide, gif, likeStore, gifComponent);
 			}
 		};
 
 		final GifProvider.ResponseListener responseListener = new GifProvider.ResponseListener() {
 			@Override
 			public void onSuccess(List<GifItem> gifs) {
-				GifListUtils.updateContent(c, binder, glide, gifs, callback);
+				Log.d(TAG, "gifs: " + gifs);
+				GifListUtils.updateContent(c, binder, glide, gifs, callback, likeChangeHandler);
 			}
 
 			@Override
@@ -93,10 +116,12 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(root);
 	}
 
-	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore) {
+	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore,
+								Component gifComponent) {
 		Component component = FullScreenComponent.create(context)
 				.initLiked(likeStore.isLiked(gif.getId()))
 				.gif(gif)
+				.gifComponent(gifComponent)
 				// Key is important. If key is not provided (or not different), state initializtion will not work
 				.key(gif.getId())
 				.glide(glide)
