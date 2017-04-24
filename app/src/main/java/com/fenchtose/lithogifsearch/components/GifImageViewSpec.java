@@ -37,7 +37,7 @@ public class GifImageViewSpec {
 		ImageView view = new ImageView(c.getApplicationContext());
 		view.setAdjustViewBounds(true);
 		view.setBackgroundColor(Color.WHITE);
-		view.setScaleType(ImageView.ScaleType.CENTER);
+		view.setScaleType(ImageView.ScaleType.CENTER_CROP);
 		return view;
 	}
 
