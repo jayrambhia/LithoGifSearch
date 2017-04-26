@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
@@ -31,9 +30,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 	private Component homeComponent;
+
 	private LithoView root;
 	private boolean isFullScreen;
-	private ComponentTree componentTree;
 
 	private static final String TAG = "MainActivity";
 
@@ -107,23 +106,22 @@ public class MainActivity extends AppCompatActivity {
 				.build();
 
 		root = LithoView.create(this, homeComponent);
-
-		componentTree = ComponentTree.create(c, homeComponent)
-				.build();
-
-		root.setComponentTree(componentTree);
-
 		setContentView(root);
 	}
 
 	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore,
 								Component gifComponent) {
-		Component component = FullScreenComponent.create(context)
+
+		Component fullScreenComponent = FullScreenComponent.create(context)
 				.initLiked(likeStore.isLiked(gif.getId()))
 				.gif(gif)
 				.gifComponent(gifComponent)
 				// Key is important. If key is not provided (or not different), state initializtion will not work
-				.key(gif.getId())
+				// Adding current time to key to get new component. If the key is gif id, for the same gif
+				// we get same component and its @OnCreateInitialState is not called.
+				// So if we have already opened a gif before and we update like state and open the gif again
+				// the state is not updated.
+				.key(gif.getId() + System.currentTimeMillis())
 				.glide(glide)
 				.callback(new FullScreenComponentSpec.Callback() {
 					@Override
@@ -133,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
 				})
 				.build();
 
-		componentTree.setRoot(component, true);
+		root.setComponentAsync(fullScreenComponent);
+
 		isFullScreen = true;
 	}
 
@@ -141,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		if (isFullScreen) {
 			isFullScreen = false;
-			componentTree.setRoot(homeComponent, true);
+			root.setComponentAsync(homeComponent);
 			return;
 		}
 

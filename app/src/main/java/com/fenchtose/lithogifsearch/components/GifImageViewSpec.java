@@ -3,6 +3,7 @@ package com.fenchtose.lithogifsearch.components;
 import android.graphics.Color;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -14,6 +15,7 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
+import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.utils.MeasureUtils;
 import com.fenchtose.lithogifsearch.models.GifItem;
@@ -45,5 +47,10 @@ public class GifImageViewSpec {
 	static void onMount(ComponentContext c, ImageView view, @Prop RequestManager glide, @Prop GifItem gif,
 						@Prop (optional = true) boolean isFullScreen) {
 		glide.load(isFullScreen ? gif.getImage() : gif.getSmall()).asGif().into(view);
+	}
+
+	@OnUnmount
+	static void onUnMount(ComponentContext c, ImageView view) {
+		Glide.clear(view);
 	}
 }
