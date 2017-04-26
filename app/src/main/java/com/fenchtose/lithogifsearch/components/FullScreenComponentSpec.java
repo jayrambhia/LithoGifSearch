@@ -1,7 +1,5 @@
 package com.fenchtose.lithogifsearch.components;
 
-import android.graphics.Color;
-
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
@@ -38,9 +36,7 @@ public class FullScreenComponentSpec {
 	@OnCreateLayout
 	static ComponentLayout onCreateLayout(ComponentContext context, @Prop RequestManager glide, @Prop GifItem gif, @State boolean isLiked) {
 		return Column.create(context)
-				.backgroundColor(Color.BLUE)
 				.justifyContent(YogaJustify.SPACE_AROUND)
-				.paddingDip(YogaEdge.ALL, 16)
 				.heightPercent(100)
 				.child(GifImageView.create(context)
 						.gif(gif)
