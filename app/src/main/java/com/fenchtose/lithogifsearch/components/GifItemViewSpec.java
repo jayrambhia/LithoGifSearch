@@ -11,6 +11,7 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Image;
@@ -53,8 +54,8 @@ public class GifItemViewSpec {
 	}
 
 	@OnUpdateState
-	static void updateLikeButton(StateValue<Boolean> isLiked) {
-		isLiked.set(!isLiked.get());
+	static void updateLikeButton(StateValue<Boolean> isLiked, @Param boolean updatedValue) {
+		isLiked.set(updatedValue);
 	}
 
 	@OnEvent(ClickEvent.class)
@@ -63,7 +64,7 @@ public class GifItemViewSpec {
 			callback.onGifLiked(gif.getId(), !isLiked);
 		}
 
-		GifItemView.updateLikeButtonAsync(c);
+		GifItemView.updateLikeButtonAsync(c, !isLiked);
 	}
 
 	@OnEvent(ClickEvent.class)

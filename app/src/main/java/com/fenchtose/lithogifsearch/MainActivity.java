@@ -10,6 +10,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.fenchtose.lithogifsearch.components.FullScreenComponent;
+import com.fenchtose.lithogifsearch.components.FullScreenComponentSpec;
 import com.fenchtose.lithogifsearch.components.GifItemViewSpec;
 import com.fenchtose.lithogifsearch.components.HomeComponent;
 import com.fenchtose.lithogifsearch.components.HomeComponentSpec;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onGifSelected(GifItem gif) {
-				showFullScreen(c, glide, gif);
+				showFullScreen(c, glide, gif, likeStore);
 			}
 		};
 
@@ -84,13 +85,21 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(root);
 	}
 
-	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif) {
-		Component component = FullScreenComponent.create(context)
+	private void showFullScreen(ComponentContext context, RequestManager glide, GifItem gif, final LikeStore likeStore) {
+		Component fullScreenComponent = FullScreenComponent.create(context)
+				.initLiked(likeStore.isLiked(gif.getId()))
 				.gif(gif)
+				.key(gif.getId())
 				.glide(glide)
+				.callback(new FullScreenComponentSpec.Callback() {
+					@Override
+					public void onGifLiked(String id, boolean liked) {
+						likeStore.setLiked(id, liked);
+					}
+				})
 				.build();
 
-		root.setComponent(component);
+		root.setComponent(fullScreenComponent);
 		isFullScreen = true;
 	}
 
