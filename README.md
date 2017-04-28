@@ -79,3 +79,9 @@ Each Event is associated with an `EventHandler` and we need to pass an `EventHan
 
 You can read more about events - [Events with Litho](http://www.jayrambhia.com/blog/android-litho-events). You can find the code here - [v5-events](https://github.com/jayrambhia/LithoGifSearch/tree/v5-events). Please ignore the README file in this tag.
 
+## Exploring Litho Series
+
+ 1. [Android GIF search engine with Litho](http://www.jayrambhia.com/blog/android-litho-gifs)
+ 2. [Managing State in Litho](http://www.jayrambhia.com/blog/android-litho-state)
+ 3. [Navigation with Litho](http://www.jayrambhia.com/blog/android-litho-navigation)
+ 4. Events with Litho(http://www.jayrambhia.com/blog/android-litho-events)
