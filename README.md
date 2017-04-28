@@ -77,5 +77,5 @@ Litho provides a general-purpose API to connect components through events. To ha
 we need to annotate it like - `@LayoutSpec(events = { MyEvent.class })` or `@MountSpec(events = { MyEvent.class })`. We can specify multiple events. Litho will generate the required code for us.
 Each Event is associated with an `EventHandler` and we need to pass an `EventHandler` to the component builder. Events are also used as callbacks to handle events dispatched by other components.
 
-You can find the code here - [v5-events](https://github.com/jayrambhia/LithoGifSearch/tree/v5-events). Please ignore the README file in this tag.
+You can read more about events - [Events with Litho](http://www.jayrambhia.com/blog/android-litho-events). You can find the code here - [v5-events](https://github.com/jayrambhia/LithoGifSearch/tree/v5-events). Please ignore the README file in this tag.
 
