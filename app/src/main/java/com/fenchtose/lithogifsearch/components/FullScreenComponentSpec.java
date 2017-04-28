@@ -13,6 +13,7 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Image;
@@ -21,9 +22,10 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import com.fenchtose.lithogifsearch.R;
 import com.fenchtose.lithogifsearch.events.FavChangeEvent;
+import com.fenchtose.lithogifsearch.events.LikeChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
-@LayoutSpec
+@LayoutSpec(events = { LikeChangeEvent.class })
 public class FullScreenComponentSpec {
 
 	private static final String TAG = "FullScreenComponent";
@@ -58,23 +60,18 @@ public class FullScreenComponentSpec {
 	}
 
 	@OnUpdateState
-	static void updateLikeButton(StateValue<Boolean> isLiked) {
-		isLiked.set(!isLiked.get());
+	static void updateLikeButton(StateValue<Boolean> isLiked, @Param boolean updatedValue) {
+		isLiked.set(updatedValue);
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) Callback callback,
-									@Prop Component gifComponent) {
-		if (callback != null) {
-			callback.onGifLiked(gif.getId(), !isLiked);
-		}
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop Component gifComponent) {
+		FullScreenComponent.updateLikeButtonAsync(c, !isLiked);
 
-		FullScreenComponent.updateLikeButtonAsync(c);
+		FullScreenComponent.dispatchLikeChangeEvent(FullScreenComponent.getLikeChangeEventHandler(c), !isLiked, gif.getId());
+
 		EventHandler<FavChangeEvent> handler = GifItemView.onFavChanged(gifComponent.getScopedContext());
 		handler.dispatchEvent(new FavChangeEvent(!isLiked, gif.getId()));
 	}
 
-	public interface Callback {
-		void onGifLiked(String id, boolean liked);
-	}
 }

@@ -65,13 +65,8 @@ public class GifItemViewSpec {
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) GifCallback callback) {
-		if (callback != null) {
-			callback.onGifLiked(gif.getId(), !isLiked);
-		}
-
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif) {
 		GifItemView.dispatchLikeChangeEvent(GifItemView.getLikeChangeEventHandler(c), !isLiked, gif.getId());
-
 		GifItemView.updateLikeButtonAsync(c, !isLiked);
 	}
 
@@ -90,7 +85,6 @@ public class GifItemViewSpec {
 	}
 
 	public interface GifCallback {
-		void onGifLiked(String id, boolean liked);
 		void onGifSelected(GifItem gif, Component gifComponent);
 	}
 }
