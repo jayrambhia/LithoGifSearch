@@ -19,9 +19,11 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 import com.fenchtose.lithogifsearch.R;
+import com.fenchtose.lithogifsearch.events.GifSelectEvent;
+import com.fenchtose.lithogifsearch.events.LikeChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
-@LayoutSpec
+@LayoutSpec(events = { LikeChangeEvent.class, GifSelectEvent.class })
 public class GifItemViewSpec {
 
 	@OnCreateInitialState
@@ -59,23 +61,14 @@ public class GifItemViewSpec {
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) GifCallback callback) {
-		if (callback != null) {
-			callback.onGifLiked(gif.getId(), !isLiked);
-		}
-
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif) {
 		GifItemView.updateLikeButtonAsync(c, !isLiked);
+		GifItemView.dispatchLikeChangeEvent(GifItemView.getLikeChangeEventHandler(c), gif.getId(), !isLiked);
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onViewClicked(ComponentContext c, @Prop GifItem gif, @Prop (optional = true) GifCallback callback) {
-		if (callback != null) {
-			callback.onGifSelected(gif);
-		}
+	static void onViewClicked(ComponentContext c, @Prop GifItem gif) {
+		GifItemView.dispatchGifSelectEvent(GifItemView.getGifSelectEventHandler(c), gif);
 	}
 
-	public interface GifCallback {
-		void onGifLiked(String id, boolean liked);
-		void onGifSelected(GifItem gif);
-	}
 }

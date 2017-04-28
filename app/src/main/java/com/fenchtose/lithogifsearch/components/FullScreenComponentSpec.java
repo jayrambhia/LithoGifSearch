@@ -19,9 +19,10 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import com.fenchtose.lithogifsearch.R;
+import com.fenchtose.lithogifsearch.events.LikeChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
 
-@LayoutSpec
+@LayoutSpec(events = { LikeChangeEvent.class })
 public class FullScreenComponentSpec {
 
 	@OnCreateInitialState
@@ -59,15 +60,9 @@ public class FullScreenComponentSpec {
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop (optional = true) Callback callback) {
-		if (callback != null) {
-			callback.onGifLiked(gif.getId(), !isLiked);
-		}
-
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif) {
 		FullScreenComponent.updateLikeButton(c, !isLiked);
+		FullScreenComponent.dispatchLikeChangeEvent(FullScreenComponent.getLikeChangeEventHandler(c), gif.getId(), !isLiked);
 	}
 
-	public interface Callback {
-		void onGifLiked(String id, boolean liked);
-	}
 }
