@@ -3,7 +3,6 @@ package com.fenchtose.lithogifsearch.components;
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
@@ -65,13 +64,20 @@ public class FullScreenComponentSpec {
 	}
 
 	@OnEvent(ClickEvent.class)
-	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif, @Prop Component gifComponent) {
+	static void onLikeButtonClicked(ComponentContext c, @State boolean isLiked, @Prop GifItem gif,
+									@Prop(optional = true) EventHandler<FavChangeEvent> likeHandler,
+									@Prop(optional = true) Callback callback) {
 		FullScreenComponent.updateLikeButtonAsync(c, !isLiked);
+		if (callback != null) {
+			callback.onGifLiked(gif.getId(), !isLiked);
+		}
 
-		FullScreenComponent.dispatchLikeChangeEvent(FullScreenComponent.getLikeChangeEventHandler(c), !isLiked, gif.getId());
-
-		EventHandler<FavChangeEvent> handler = GifItemView.onFavChanged(gifComponent.getScopedContext());
-		handler.dispatchEvent(new FavChangeEvent(!isLiked, gif.getId()));
+		if (likeHandler != null) {
+			likeHandler.dispatchEvent(new FavChangeEvent(!isLiked, gif.getId()));
+		}
 	}
 
+	public interface Callback {
+		void onGifLiked(String gifId, boolean isLiked);
+	}
 }

@@ -22,8 +22,7 @@ import java.util.List;
 
 public class GifListUtils {
 	public static void updateContent(ComponentContext c, RecyclerBinder binder, RequestManager glide,
-									 List<GifItem> gifs, @Nullable GifItemViewSpec.GifCallback callback,
-									 EventHandler likeEventHandler) {
+									 List<GifItem> gifs, @Nullable GifItemViewSpec.GifCallback callback) {
 
 		binder.removeRangeAt(0, binder.getItemCount());
 
@@ -35,7 +34,6 @@ public class GifListUtils {
 							.gif(gif)
 							.glide(glide)
 							.initLiked(gif.isLiked())
-							.likeChangeEventHandler(likeEventHandler)
 							.callback(callback)
 							.key(gif.getId())
 							.build()
