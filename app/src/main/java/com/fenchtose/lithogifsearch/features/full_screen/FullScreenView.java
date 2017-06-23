@@ -1,5 +1,7 @@
 package com.fenchtose.lithogifsearch.features.full_screen;
 
+import android.support.annotation.Nullable;
+
 import com.bumptech.glide.RequestManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -13,6 +15,7 @@ import com.fenchtose.lithogifsearch.models.GifItem;
 public class FullScreenView implements ComponentView<Component<FullScreenComponent>> {
 
 	private final ComponentContext c;
+	@Nullable
 	private final EventHandler<FavChangeEvent> likeHandler;
 	private final GifItem gif;
 	private final RequestManager glide;
@@ -20,7 +23,7 @@ public class FullScreenView implements ComponentView<Component<FullScreenCompone
 
 	private Callback callback;
 
-	public FullScreenView(ComponentContext c, EventHandler<FavChangeEvent> likeHandler, GifItem gif,
+	public FullScreenView(ComponentContext c, @Nullable EventHandler<FavChangeEvent> likeHandler, GifItem gif,
 						  RequestManager glide, boolean isLiked) {
 		this.c = c;
 		this.likeHandler = likeHandler;

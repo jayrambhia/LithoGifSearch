@@ -1,23 +1,26 @@
 package com.fenchtose.lithogifsearch.models;
 
-import com.google.gson.JsonObject;
+import android.support.annotation.VisibleForTesting;
+
+import com.google.gson.annotations.SerializedName;
 
 public class GifItem {
 
-	private final String id;
-	private final String image;
-	private final String small;
-	private final int width;
-	private final int height;
+	public final String id;
+	public final Images images;
 	private final boolean isLiked;
 
-	public GifItem(JsonObject json, boolean isLiked) {
-		this.id = json.get("id").getAsString();
-		this.small = json.get("images").getAsJsonObject().get("fixed_height_downsampled").getAsJsonObject().get("url").getAsString();
-		JsonObject image = json.get("images").getAsJsonObject().get("original").getAsJsonObject();
-		this.image = image.get("url").getAsString();
-		this.width = image.get("width").getAsInt();
-		this.height = image.get("height").getAsInt();
+	// For gson
+	private GifItem() {
+		id = "";
+		images = Images.Empty();
+		isLiked = false;
+	}
+
+	@VisibleForTesting
+	public GifItem(String id, Images images, boolean isLiked) {
+		this.id = id;
+		this.images = images;
 		this.isLiked = isLiked;
 	}
 
@@ -26,23 +29,80 @@ public class GifItem {
 	}
 
 	public String getImage() {
-		return image;
+		return images.original.url;
 	}
 
 	public String getSmall() {
-		return small;
+		return images.small.url;
 	}
 
 	public int getWidth() {
-		return width;
+		return images.original.width;
 	}
 
 	public int getHeight() {
-		return height;
+		return images.original.height;
 	}
 
 	public boolean isLiked() {
 		return isLiked;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof GifItem)) {
+			return false;
+		}
+		GifItem gif = (GifItem)obj;
+		return id.equals(gif.id) && images.equals(gif.images);
+	}
+
+	public static class Images {
+		public final Image original;
+		@SerializedName("fixed_height_downsampled")
+		public final Image small;
+
+		public Images() {
+			original = Image.Empty();
+			small = Image.Empty();
+		}
+
+		public static Images Empty() {
+			return new Images();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof Images)) {
+				return false;
+			}
+			Images imgs = (Images)obj;
+			return original.equals(imgs.original) && small.equals(imgs.small);
+		}
+	}
+
+	public static class Image {
+		public final String url;
+		public final int width;
+		public final int height;
+
+		public Image() {
+			this.url = "";
+			this.width = 0;
+			this.height = 0;
+		}
+
+		public static Image Empty() {
+			return new Image();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof Image)) {
+				return false;
+			}
+			Image img = (Image)obj;
+			return url.equals(img.url) && width == img.width && height == img.height;
+		}
+	}
 }

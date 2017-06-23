@@ -1,41 +1,42 @@
 package com.fenchtose.lithogifsearch.features.full_screen;
 
-import android.content.Context;
+import android.support.annotation.Nullable;
 
-import com.bumptech.glide.RequestManager;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.fenchtose.lithogifsearch.base.AppPath;
+import com.fenchtose.lithogifsearch.dagger.ActivityComponent;
+import com.fenchtose.lithogifsearch.dagger.AppComponent;
 import com.fenchtose.lithogifsearch.events.FavChangeEvent;
 import com.fenchtose.lithogifsearch.models.GifItem;
-import com.fenchtose.lithogifsearch.models.db.PreferenceLikeStore;
 
 public class FullScreenPath extends AppPath<FullScreenPresenter, FullScreenView> {
 
-	private final Context context;
-	private final ComponentContext c;
+	private final AppComponent appComponent;
+	private final ActivityComponent activityComponent;
+
+	@Nullable
 	private final EventHandler<FavChangeEvent> likeHandler;
 	private final GifItem gif;
-	private final RequestManager glide;
 	private final boolean isLiked;
 
-	public FullScreenPath(Context context, ComponentContext c, EventHandler<FavChangeEvent> likeHandler,
-						  GifItem gif, RequestManager glide, boolean isLiked) {
-		this.context = context;
-		this.c = c;
+	public FullScreenPath(AppComponent appComponent, ActivityComponent activityComponent,
+						  @Nullable EventHandler<FavChangeEvent> likeHandler,
+						  GifItem gif, boolean isLiked) {
+		this.appComponent = appComponent;
+		this.activityComponent = activityComponent;
 		this.likeHandler = likeHandler;
 		this.gif = gif;
-		this.glide = glide;
 		this.isLiked = isLiked;
 	}
 
 	@Override
 	protected FullScreenView createView() {
-		return new FullScreenView(c, likeHandler, gif, glide, isLiked);
+		return new FullScreenView(activityComponent.componentContext(), likeHandler, gif,
+				activityComponent.glide(), isLiked);
 	}
 
 	@Override
 	protected FullScreenPresenter createPresenter() {
-		return new FullScreenPresenter(new PreferenceLikeStore(context));
+		return new FullScreenPresenter(this, appComponent.likeStore());
 	}
 }

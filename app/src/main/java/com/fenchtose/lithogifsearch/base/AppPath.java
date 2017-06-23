@@ -1,6 +1,6 @@
 package com.fenchtose.lithogifsearch.base;
 
-public abstract class AppPath<T extends Presenter<V>, V extends ComponentView> {
+public abstract class AppPath<T extends Presenter, V extends ComponentView> {
 
 	private T presenter;
 	private V view;

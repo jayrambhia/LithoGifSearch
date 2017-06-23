@@ -2,20 +2,19 @@ package com.fenchtose.lithogifsearch.features.home;
 
 import com.facebook.litho.Component;
 import com.fenchtose.lithogifsearch.base.Presenter;
-import com.fenchtose.lithogifsearch.base.router.Routes;
-import com.fenchtose.lithogifsearch.components.GifItemView;
 import com.fenchtose.lithogifsearch.models.GifItem;
 import com.fenchtose.lithogifsearch.models.api.GifProvider;
 import com.fenchtose.lithogifsearch.models.db.LikeStore;
 
 import java.util.List;
 
-public class HomePresenter extends Presenter<HomeView> implements HomeView.Callback {
+public class HomePresenter extends Presenter<HomePath, HomeView> implements HomeView.Callback {
 
 	private final LikeStore likeStore;
 	private final GifProvider gifProvider;
 
-	public HomePresenter(LikeStore likeStore, GifProvider gifProvider) {
+	public HomePresenter(HomePath path, LikeStore likeStore, GifProvider gifProvider) {
+		super(path);
 		this.likeStore = likeStore;
 		this.gifProvider = gifProvider;
 	}
@@ -59,6 +58,6 @@ public class HomePresenter extends Presenter<HomeView> implements HomeView.Callb
 
 	@Override
 	public void onGifSelected(GifItem gif, Component gifComponent) {
-		Routes.get().openGif(GifItemView.onFavChanged(gifComponent.getScopedContext()), gif, likeStore.isLiked(gif.getId()));
+		getPath().openGif(gif, gifComponent, likeStore.isLiked(gif.getId()));
 	}
 }

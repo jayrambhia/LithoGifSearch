@@ -2,12 +2,18 @@ package com.fenchtose.lithogifsearch.base;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.lang.ref.WeakReference;
 
-public class Presenter<V extends ComponentView> {
+public class Presenter<T extends AppPath, V extends ComponentView> {
 
 	private WeakReference<V> viewRef = new WeakReference<>(null);
+	private final T path;
+
+	public Presenter(T path) {
+		this.path = path;
+	}
 
 	@CallSuper
 	public void attach(V view) {
@@ -34,5 +40,14 @@ public class Presenter<V extends ComponentView> {
 
 	public boolean canGoBack() {
 		return true;
+	}
+
+	public T getPath() {
+		return path;
+	}
+
+	@VisibleForTesting
+	public V getViewForTest() {
+		return viewRef.get();
 	}
 }

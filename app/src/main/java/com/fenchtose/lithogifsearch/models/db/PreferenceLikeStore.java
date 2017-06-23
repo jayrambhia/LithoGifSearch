@@ -7,7 +7,7 @@ public class PreferenceLikeStore implements LikeStore {
 
 	private final SharedPreferences preferences;
 
-	private static final String PREFERENCE_NAME = "like_store";
+	public static final String PREFERENCE_NAME = "like_store";
 
 	public PreferenceLikeStore(Context context) {
 		preferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);

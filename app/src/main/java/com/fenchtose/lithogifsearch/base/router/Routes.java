@@ -1,5 +1,7 @@
 package com.fenchtose.lithogifsearch.base.router;
 
+import android.support.annotation.Nullable;
+
 import com.facebook.litho.EventHandler;
 import com.fenchtose.lithogifsearch.dagger.ActivityComponent;
 import com.fenchtose.lithogifsearch.dagger.AppComponent;
@@ -41,13 +43,11 @@ public class Routes {
 	}
 
 	public void openHome() {
-		router.go(new HomePath(activityComponent.context(), activityComponent.componentContext(),
-				activityComponent.glide(), appComponent.likeStore(), appComponent.gifProvider()));
+		router.go(new HomePath(appComponent, activityComponent));
 	}
 
-	public void openGif(EventHandler<FavChangeEvent> likeHandler, GifItem gif, boolean isLiked) {
-		router.go(new FullScreenPath(activityComponent.context(), activityComponent.componentContext(),
-				likeHandler, gif, activityComponent.glide(), isLiked));
+	public void openGif(@Nullable EventHandler<FavChangeEvent> likeHandler, GifItem gif, boolean isLiked) {
+		router.go(new FullScreenPath(appComponent, activityComponent, likeHandler, gif, isLiked));
 	}
 
 }

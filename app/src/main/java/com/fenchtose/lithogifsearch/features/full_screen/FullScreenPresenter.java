@@ -3,11 +3,12 @@ package com.fenchtose.lithogifsearch.features.full_screen;
 import com.fenchtose.lithogifsearch.base.Presenter;
 import com.fenchtose.lithogifsearch.models.db.LikeStore;
 
-public class FullScreenPresenter extends Presenter<FullScreenView> implements FullScreenView.Callback {
+public class FullScreenPresenter extends Presenter<FullScreenPath, FullScreenView> implements FullScreenView.Callback {
 
 	private final LikeStore likeStore;
 
-	public FullScreenPresenter(LikeStore likeStore) {
+	public FullScreenPresenter(FullScreenPath path, LikeStore likeStore) {
+		super(path);
 		this.likeStore = likeStore;
 	}
 
