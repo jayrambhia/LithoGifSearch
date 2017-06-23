@@ -26,14 +26,14 @@ public class MainActivity extends AppCompatActivity {
 
 		router = Router.with(root);
 
-		Routes routes = new Routes.Builder()
+		new Routes.Builder()
 				.context(this)
 				.cContext(c)
 				.glide(glide)
 				.router(router)
 				.build();
 
-		routes.openHome();
+		Routes.get().openHome();
 	}
 
 	@Override
@@ -45,4 +45,9 @@ public class MainActivity extends AppCompatActivity {
 		super.onBackPressed();
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Routes.release();
+	}
 }

@@ -35,6 +35,10 @@ public class Routes {
 		return instance;
 	}
 
+	public static void release() {
+		instance = null;
+	}
+
 	public void openHome() {
 		router.go(new HomePath(context, cContext, glide));
 	}
