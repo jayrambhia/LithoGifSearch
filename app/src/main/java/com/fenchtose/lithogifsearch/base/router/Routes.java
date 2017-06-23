@@ -1,10 +1,8 @@
 package com.fenchtose.lithogifsearch.base.router;
 
-import android.content.Context;
-
-import com.bumptech.glide.RequestManager;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.fenchtose.lithogifsearch.dagger.ActivityComponent;
+import com.fenchtose.lithogifsearch.dagger.AppComponent;
 import com.fenchtose.lithogifsearch.events.FavChangeEvent;
 import com.fenchtose.lithogifsearch.features.full_screen.FullScreenPath;
 import com.fenchtose.lithogifsearch.features.home.HomePath;
@@ -12,19 +10,22 @@ import com.fenchtose.lithogifsearch.models.GifItem;
 
 public class Routes {
 
-	private final Context context;
-	private final ComponentContext cContext;
+	private final AppComponent appComponent;
+	private final ActivityComponent activityComponent;
 	private final Router router;
-	private final RequestManager glide;
 
 	private static Routes instance;
 
-	private Routes(Builder builder) {
-		context = builder.context;
-		cContext = builder.cContext;
-		router = builder.router;
-		glide = builder.glide;
+	private Routes(AppComponent appComponent, ActivityComponent activityComponent, Router router) {
+		this.appComponent = appComponent;
+		this.activityComponent = activityComponent;
+		this.router = router;
 		instance = this;
+	}
+
+	public static Routes start(AppComponent appComponent, ActivityComponent activityComponent, Router router) {
+		instance = new Routes(appComponent, activityComponent, router);
+		return instance;
 	}
 
 	public static Routes get() {
@@ -35,49 +36,18 @@ public class Routes {
 		return instance;
 	}
 
-	public static void release() {
+	public static void stop() {
 		instance = null;
 	}
 
 	public void openHome() {
-		router.go(new HomePath(context, cContext, glide));
+		router.go(new HomePath(activityComponent.context(), activityComponent.componentContext(),
+				activityComponent.glide(), appComponent.likeStore(), appComponent.gifProvider()));
 	}
 
 	public void openGif(EventHandler<FavChangeEvent> likeHandler, GifItem gif, boolean isLiked) {
-		router.go(new FullScreenPath(context, cContext, likeHandler, gif, glide, isLiked));
+		router.go(new FullScreenPath(activityComponent.context(), activityComponent.componentContext(),
+				likeHandler, gif, activityComponent.glide(), isLiked));
 	}
 
-	public static final class Builder {
-		private Context context;
-		private ComponentContext cContext;
-		private Router router;
-		private RequestManager glide;
-
-		public Builder() {
-		}
-
-		public Builder context(Context context) {
-			this.context = context;
-			return this;
-		}
-
-		public Builder cContext(ComponentContext cContext) {
-			this.cContext = cContext;
-			return this;
-		}
-
-		public Builder router(Router router) {
-			this.router = router;
-			return this;
-		}
-
-		public Builder glide(RequestManager glide) {
-			this.glide = glide;
-			return this;
-		}
-
-		public Routes build() {
-			return new Routes(this);
-		}
-	}
 }

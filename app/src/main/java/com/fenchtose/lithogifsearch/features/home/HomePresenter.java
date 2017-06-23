@@ -15,22 +15,9 @@ public class HomePresenter extends Presenter<HomeView> implements HomeView.Callb
 	private final LikeStore likeStore;
 	private final GifProvider gifProvider;
 
-	public HomePresenter(LikeStore likeStore) {
+	public HomePresenter(LikeStore likeStore, GifProvider gifProvider) {
 		this.likeStore = likeStore;
-		gifProvider = new GifProvider(new GifProvider.ResponseListener() {
-			@Override
-			public void onSuccess(List<GifItem> gifs) {
-				HomeView view = getView();
-				if (view != null) {
-					view.updateContent(gifs);
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				t.printStackTrace();
-			}
-		}, likeStore);
+		this.gifProvider = gifProvider;
 	}
 
 	@Override
@@ -48,7 +35,20 @@ public class HomePresenter extends Presenter<HomeView> implements HomeView.Callb
 	@Override
 	public void onSearchRequested(String query) {
 		if (query.length() >= 6) {
-			gifProvider.search(query);
+			gifProvider.search(query, new GifProvider.ResponseListener() {
+				@Override
+				public void onSuccess(List<GifItem> gifs) {
+					HomeView view = getView();
+					if (view != null) {
+						view.updateContent(gifs);
+					}
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
+					t.printStackTrace();
+				}
+			});
 		}
 	}
 

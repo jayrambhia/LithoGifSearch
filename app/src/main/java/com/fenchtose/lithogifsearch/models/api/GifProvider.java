@@ -19,11 +19,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GifProvider {
 
 	private GifApi api;
-	private final ResponseListener listener;
 	private final LikeStore likeStore;
 
-	public GifProvider(ResponseListener listener, LikeStore store) {
-		this.listener = listener;
+	public GifProvider(LikeStore store) {
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(GifApi.ENDPOINT)
 				.addConverterFactory(GsonConverterFactory.create())
@@ -33,7 +31,7 @@ public class GifProvider {
 		this.likeStore = store;
 	}
 
-	public void search(@NonNull String query) {
+	public void search(@NonNull String query, final ResponseListener listener) {
 		Call<JsonObject> call = api.search(query, GifApi.API_KEY);
 		call.enqueue(new Callback<JsonObject>() {
 			@Override
